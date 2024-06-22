@@ -1,5 +1,6 @@
 <?php if(!isset($data)): ?>
     <nav class="navbar-nav">
+        <?php $link('SignUp', 'User', 'SignUp', cssClass: 'nav-link') ?>
         <?php $link('Login', 'User', 'LogIn', cssClass: 'nav-link') ?>
     </nav>
 <?php else: ?>

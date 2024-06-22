@@ -1,7 +1,7 @@
 <?php
 namespace Presentation\Controllers;
 
-class Books extends \Presentation\MVC\Controller {
+class Products extends \Presentation\MVC\Controller {
     const PARAM_CATEGORY_ID = 'cid';
     const PARAM_FILTER = 'f';
 
@@ -25,6 +25,8 @@ class Books extends \Presentation\MVC\Controller {
     }
 
     public function GET_Search(): \Presentation\MVC\ActionResult {
+        echo $this->tryGetParam(self::PARAM_FILTER, $value) ? $value : 'nothing';
+        echo ' | ', $this->tryGetParam(self::PARAM_FILTER, $value);
         return $this->view('bookSearch', [
             'user' => $this->signedInUserQuery->execute(),
             'filter' => $this->tryGetParam(self::PARAM_FILTER, $value) ? $value : '',

@@ -6,7 +6,6 @@ class Repository
     implements
     \Application\Interfaces\BookRepository,
     \Application\Interfaces\CategoryRepository,
-    \Application\Interfaces\OrderRepository,
     \Application\Interfaces\UserRepository
 {
     private $server;
@@ -137,11 +136,13 @@ class Repository
         return $orderId;
     }
 
+
+
     public function getUser(int $id): ?\Application\Entities\User {
         $user = null;
         $con = $this->getConnection();
         $stat = $this->executeStatement($con,
-            'SELECT id, userName, passwordHash FROM users WHERE id = ?',
+            'SELECT id, uname, pwdhash FROM users WHERE id = ?',
             function($s) use ($id) {
                 $s->bind_param('i', $id);
             }
@@ -159,7 +160,7 @@ class Repository
         $user = null;
         $con = $this->getConnection();
         $stat = $this->executeStatement($con,
-            'SELECT id, userName, passwordHash FROM users WHERE userName = ?',
+            'SELECT id, uname, pwdhash FROM users WHERE uname = ?',
             function($s) use ($userName) {
                 $s->bind_param('s', $userName);
             }
@@ -171,5 +172,23 @@ class Repository
         $stat->close();
         $con->close();
         return $user;
+    }
+
+    public function createUser(string $userName, string $password): ?\Application\Entities\User {
+        $user = null;
+        $con = $this->getConnection();
+        $stat = $this->executeStatement($con,
+            'INSERT INTO `users` (`uname`, `pwdhash`)
+                    VALUES (?, ?)',
+            function ($s) use ($userName, $password) {
+                $s->bind_param('ss', $userName, password_hash($password, PASSWORD_DEFAULT, ['cost' => 10]));
+            }
+        );
+        $userId = $stat->insert_id;
+        $stat->close();
+        $con->commit();
+        $con->close();
+
+        return $this->getUser($userId);
     }
 }

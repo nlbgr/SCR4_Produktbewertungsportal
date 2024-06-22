@@ -9,19 +9,17 @@
 <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
         <div class="container">
-            <?php $link('SCR4 Book Shop', 'Home', 'Index', cssClass: 'navbar-brand'); ?>
+            <?php $link('Produktbewertungsportal', 'Home', 'Index', cssClass: 'navbar-brand'); ?>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbar">
                 <nav class="navbar-nav me-auto">
                     <?php $link('Home', 'Home', 'Index', cssClass: 'nav-link'); ?>
-                    <?php $link('Books', 'Books', 'Index', cssClass: 'nav-link'); ?>
-                    <?php $link('Search', 'Books', 'Search', cssClass: 'nav-link'); ?>
-                    <?php $link('Checkout', 'Order', 'Create', cssClass: 'nav-link'); ?>
+                    <?php $link('Products', 'Products', 'Index', cssClass: 'nav-link'); ?>
+                    <?php $link('Search', 'Products', 'Search', cssClass: 'nav-link'); ?>
                 </nav>
-                <?php $render('partial/user', $data['user']); // TODO ?>
-                <!-- TODO: navigation user -->
+                <?php $render('partial/user', $data['user']); ?>
             </div>
         </div>
     </nav>

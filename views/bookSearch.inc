@@ -3,7 +3,7 @@
     <h1>Search Site</h1>
 
     <div class="my-3">
-        <?php $beginForm('Books', 'Search'); ?>
+        <?php $beginForm('Products', 'Search'); ?>
             <div class="row g-3">
                 <div class="col-auto">
                     <input class="form-control" name="f" value="<?php $htmlOut($data['filter'])?>" />

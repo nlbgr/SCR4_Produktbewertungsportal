@@ -4,7 +4,7 @@
 
         <nav class="nav nav-pills my-3">
             <?php foreach($data['categories'] as $cat) { ?>
-                <?php $link($cat->name, 'Books', 'Index', ['cid' => $cat->id], 'nav-link' . ($cat->id == $data['selectedCategoryId'] ? ' active': '')); ?>
+                <?php $link($cat->name, 'Products', 'Index', ['cid' => $cat->id], 'nav-link' . ($cat->id == $data['selectedCategoryId'] ? ' active': '')); ?>
             <?php } ?>
         </nav>
 <?php if($data['selectedCategoryId'] !== null): ?>
