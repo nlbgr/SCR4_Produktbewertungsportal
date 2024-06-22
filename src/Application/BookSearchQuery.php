@@ -4,8 +4,7 @@ namespace Application;
 
 class BookSearchQuery {
     public function __construct(
-        private Interfaces\BookRepository $bookRepository,
-        private Services\CartService $cartService
+        private Interfaces\ProductRepository $bookRepository,
     ) {}
 
     public function execute(string $filter): array {

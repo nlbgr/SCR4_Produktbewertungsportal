@@ -2,7 +2,7 @@
 
 namespace Application;
 
-class UserData {
+readonly class UserData {
     public function __construct(
         public int $id,
         public string $userName

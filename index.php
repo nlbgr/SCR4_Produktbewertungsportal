@@ -23,16 +23,15 @@ $sp->register(\Presentation\Controllers\User::class);
 
 // APPLICATION
 // commands and querries
-$sp->register(\Application\CategoriesQuery::class);
-$sp->register(\Application\BooksQuery::class);
+$sp->register(\Application\ProductsQuery::class);
 $sp->register(\Application\BookSearchQuery::class);
 $sp->register(\Application\SignInCommand::class);
 $sp->register(\Application\SignedInUserQuery::class);
 $sp->register(\Application\SignOutCommand::class);
 $sp->register(\Application\CheckIfUserExistsCommand::class);
 $sp->register(\Application\SignUpCommand::class);
+$sp->register(\Application\RatingsQuery::class);
 
-$sp->register(\Application\Services\CartService::class);
 $sp->register(\Application\Services\AuthenticationService::class);
 
 
@@ -45,9 +44,9 @@ $sp->register(\Application\Interfaces\Session::class, \Infrastructure\Session::c
 $sp->register(\Infrastructure\Repository::class, function() {
     return new \Infrastructure\Repository("localhost", "root", "", "produktbewertungsportal");
 }, isSingleton: true);
-$sp->register(\Application\Interfaces\CategoryRepository::class, \Infrastructure\Repository::class);
-$sp->register(\Application\Interfaces\BookRepository::class, \Infrastructure\Repository::class);
+$sp->register(\Application\Interfaces\ProductRepository::class, \Infrastructure\Repository::class);
 $sp->register(\Application\Interfaces\UserRepository::class, \Infrastructure\Repository::class);
+$sp->register(\Application\Interfaces\RatingsRepository::class, \Infrastructure\Repository::class);
 
 
 $sp->resolve(\Presentation\MVC\MVC::class)->handleRequest($sp); 

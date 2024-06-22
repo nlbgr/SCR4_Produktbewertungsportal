@@ -2,7 +2,7 @@
 
 namespace Application\Interfaces;
 
-interface BookRepository {
-    public function getBooksForCategory(int $categoryId): array;
+interface ProductRepository {
+    public function getProducts(): array;
     public function getBooksForFilter(string $filter): array;
 }

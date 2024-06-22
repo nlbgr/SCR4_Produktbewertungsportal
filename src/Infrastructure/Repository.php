@@ -4,9 +4,9 @@ namespace Infrastructure;
 
 class Repository
     implements
-    \Application\Interfaces\BookRepository,
-    \Application\Interfaces\CategoryRepository,
-    \Application\Interfaces\UserRepository
+    \Application\Interfaces\ProductRepository,
+    \Application\Interfaces\UserRepository,
+    \Application\Interfaces\RatingsRepository
 {
     private $server;
     private $userName;
@@ -54,24 +54,27 @@ class Repository
         return $statement;
     }
 
-    public function getBooksForCategory(int $categoryId): array {
-        $books = [];
+    public function getProducts(): array {
+        $products = [];
 
         $con = $this->getConnection();
         $stat = $this->executeStatement(
             $con,
-            "SELECT id, title, author, price FROM books WHERE categoryId = ?",
-            function($s) use ($categoryId) {
-                $s->bind_param('i', $categoryId);
+            "SELECT p.id, p.name, u.uname, m.name
+                    FROM products p
+                    JOIN users u ON p.userId = u.id
+                    JOIN manufacturers m ON p.manufacturerId = m.id;",
+            function($s) {
+                return; // prepare the statement altough no value is set. Was a tip by another teacher
             });
-        $stat->bind_result($id, $title, $author, $price);
+        $stat->bind_result($id, $name, $uname, $mname);
         while($stat->fetch()) {
-            $books[] = new \Application\Entities\Book($id, $title, $author, $price);
+            $products[] = new \Application\Entities\Product($id, $name, $uname, $mname);
         }
         $stat->close();
         $con->close();
 
-        return $books;
+        return $products;
     }
 
     public function getBooksForFilter(string $filter): array {
@@ -95,45 +98,29 @@ class Repository
         return $books;
     }
 
-    public function getCategories(): array {
-        $categories = [];
+
+
+    public function getRatingsForProduct(int $productId): array {
+        $ratings = [];
 
         $con = $this->getConnection();
-        $res = $this->executeQuery($con, "SELECT id, name FROM categories");
-        while ($cat = $res->fetch_object()) {
-            $categories[] = new \Application\Entities\Category($cat->id, $cat->name);
-        }
-        $res->close();
-        $con->close();
-
-        return $categories;
-    }
-
-    public function createOrder(array $books, string $ccName, string $ccNumber): ?int {
-        $con = $this->getConnection();
-        $con->autocommit(false);
         $stat = $this->executeStatement(
             $con,
-            "INSERT INTO orders (userId, creditCardHolder, creditCardNumber) VALUES (?, ?, ?)",
-            function($s) use ($userId, $creditCardName, $creditCardNumber) {
-                $s->bind_param('iss', $userId, $creditCardName, $creditCardNumber);
+            "SELECT r.id, r.date, r.comment, r.grade, u.uname, r.productId
+                    FROM ratings r JOIN users u ON r.userId = u.id
+                    WHERE r.productId = ?",
+            function($s) use ($productId) {
+                $s->bind_param("i", $productId);
             }
         );
-        $orderId = $stat->insert_id;
-        $stat->close();
-
-        foreach ($books as $bookId => $count) {
-            for ($i = 0; $i < $count; $i++) {
-                $this->executeStatement($con,
-                "INSERT INTO orderedBooks (orderId, bookId) VALUES (?, ?)",
-                function($s) use ($orderId, $bookId) {
-                    $s->bind_param("ii", $orderId, $bookId);
-                })->close();
-            }
+        $stat->bind_result($id, $date, $comment, $grade, $uname, $pId);
+        while ($stat->fetch()) {
+            $ratings[] = new \Application\Entities\Rating($id, $date, $comment !== null ? $comment : "", $grade, $uname, $pId);
         }
-        $con->commit();
+        $stat->close();
         $con->close();
-        return $orderId;
+
+        return $ratings;
     }
 
 
