@@ -294,6 +294,21 @@ class Repository
         return $this->getRatingById($ratingId);
     }
 
+    public function deleteRating(int $ratingId, int $userId): bool {
+        $con = $this->getConnection();
+        $stat = $this->executeStatement($con,
+            'DELETE FROM ratings WHERE id = ? AND userId = ?',
+            function($s) use ($ratingId, $userId) {
+                $s->bind_param('ii', $ratingId, $userId);
+            }
+        );
+        $stat->close();
+        $con->commit();
+        $con->close();
+
+        return $this->getProductById($ratingId) === null;
+    }
+
 
 
     public function getUser(int $id): ?\Application\Entities\User {
@@ -335,7 +350,7 @@ class Repository
     public function createUser(string $userName, string $password): ?\Application\Entities\User {
         $con = $this->getConnection();
         $stat = $this->executeStatement($con,
-            'INSERT INTO `users` (`uname`, `pwdhash`)
+            'INSERT INTO users (uname, pwdhash)
                     VALUES (?, ?)',
             function ($s) use ($userName, $password) {
                 $s->bind_param('ss', $userName, password_hash($password, PASSWORD_DEFAULT, ['cost' => 10]));
@@ -390,7 +405,7 @@ class Repository
     public function createNewManufacturer(string $mname): ?\Application\Entities\Manufacturer {
         $con = $this->getConnection();
         $stat = $this->executeStatement($con,
-            'INSERT INTO `manufacturers` (`name`)
+            'INSERT INTO manufacturers (name)
                     VALUES (?)',
             function ($s) use ($mname) {
                 $s->bind_param('s', $mname);

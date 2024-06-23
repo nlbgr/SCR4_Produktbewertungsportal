@@ -105,15 +105,14 @@ class Products extends \Presentation\MVC\Controller {
     public function POST_Delete(): \Presentation\MVC\ActionResult {
         $result = $this->deleteProductCommand->execute($this->getParam(self::PARAM_PRODUCT_ID));
         if ($result != 0) {
-            if ($result & \Application\AddProductCommand::Error_NotAuthenticated) {
+            if ($result & \Application\DeleteRatingCommand::Error_NotAuthenticated) {
                 return $this->redirect('User', 'LogIn');
             }
 
             // Just one error left that could have happened
-            return $this->view('productCreate', [
+            return $this->view('productList', [
                 'user' => $this->signedInUserQuery->execute(),
-                'pname' => $this->tryGetParam(self::PARAM_PRODUCT_NAME, $value) ? $value : '',
-                'mname' => $this->tryGetParam(self::PARAM_MANUFACTURER_NAME, $value) ? $value : '',
+                'products' => $this->productsQuery->execute(),
                 'context' => $this->getRequestUri(),
                 'errors' => ["Product deletion failed"]
             ]);

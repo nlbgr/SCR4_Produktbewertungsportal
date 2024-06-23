@@ -4,13 +4,16 @@ namespace Presentation\Controllers;
 
 class Rating extends \Presentation\MVC\Controller {
     const PARAM_PRODUCT_ID = 'pid';
+    const PARAM_RATING_ID = 'rid';
     const PARAM_COMMENT = 'comment';
     const PARAM_GRADE = 'grade';
 
     public function __construct(
-        private \Application\SignedInUserQuery  $signedInUserQuery,
-        private \Application\ProductQuery       $productQuery,
-        private \Application\AddRatingCommand   $addRatingCommand
+        private \Application\SignedInUserQuery      $signedInUserQuery,
+        private \Application\ProductQuery           $productQuery,
+        private \Application\AddRatingCommand       $addRatingCommand,
+        private \Application\DeleteRatingCommand    $deleteRatingCommand,
+        private \Application\ProductsQuery          $productsQuery,
     ) {}
 
     public function GET_Create(): \Presentation\MVC\ActionResult {
@@ -58,6 +61,26 @@ class Rating extends \Presentation\MVC\Controller {
             ]);
         } else {
             return $this->redirect('Products', 'Index');
+        }
+    }
+
+    public function POST_Delete(): \Presentation\MVC\ActionResult {
+        $result = $this->deleteRatingCommand->execute($this->getParam(self::PARAM_RATING_ID));
+
+        if ($result != 0) {
+            if ($result & \Application\DeleteRatingCommand::Error_NotAuthenticated) {
+                return $this->redirect('User', 'LogIn');
+            }
+
+            // Just one error left that could have happened
+            return $this->view('productList', [
+                'user' => $this->signedInUserQuery->execute(),
+                'products' => $this->productsQuery->execute(),
+                'context' => $this->getRequestUri(),
+                'errors' => ["Rating deletion failed"]
+            ]);
+        } else {
+            return $this->redirect('Products', 'Index'); // Redirect to overview page, so that the post request cant be repeated
         }
     }
 }
