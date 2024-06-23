@@ -1,6 +1,6 @@
 <?php $render('partial/header', $data); ?>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3">
         <h1 class="mb-0">Details for: <?php $htmlOut($data['product']->name) ?></h1>
         <div class="d-flex gap-1 mt-auto mb-auto">
             <?php if (isset($data['user']) && $data['product']->user === $data['user']->userName): ?>

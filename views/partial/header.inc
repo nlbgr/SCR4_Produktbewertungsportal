@@ -6,8 +6,8 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <title>SCR4 Book Shop</title>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+<body class="pb-5">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3 sticky-top">
         <div class="container">
             <?php $link('Produktbewertungsportal', 'Home', 'Index', cssClass: 'navbar-brand'); ?>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
