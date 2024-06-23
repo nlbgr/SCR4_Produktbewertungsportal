@@ -2,7 +2,7 @@
 
 namespace Application;
 
-class CheckIfUserExistsCommand {
+class CheckIfUserExistsQuery {
     public function __construct(
         private Interfaces\UserRepository $userRepository
     ){ }

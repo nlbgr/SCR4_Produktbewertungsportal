@@ -8,11 +8,11 @@ class User extends \Presentation\MVC\Controller {
     const PARAM_REP_PASSWORD = 'repPassword';
 
     public function __construct(
-        private \Application\SignInCommand $signInCommand,
-        private \Application\SignOutCommand $signOutCommand,
-        private \Application\SignedInUserQuery $signedInUserQuery,
-        private \Application\CheckIfUserExistsCommand $checkIfUserExistsCommand,
-        private \Application\SignUpCommand $signUpCommand
+        private \Application\SignInCommand          $signInCommand,
+        private \Application\SignOutCommand         $signOutCommand,
+        private \Application\SignedInUserQuery      $signedInUserQuery,
+        private \Application\CheckIfUserExistsQuery $checkIfUserExistsCommand,
+        private \Application\SignUpCommand          $signUpCommand
     ) {}
 
     public function GET_LogIn(): \Presentation\MVC\ActionResult {

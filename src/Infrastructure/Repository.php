@@ -98,6 +98,31 @@ class Repository
         return $books;
     }
 
+    public function getProductById(int $productId): ?\Application\Entities\Product {
+        $product = null;
+
+        $con = $this->getConnection();
+        $stat = $this->executeStatement(
+            $con,
+            "SELECT p.id, p.name, u.uname, m.name 
+                    FROM products p 
+                        JOIN users u ON p.userId = u.id
+                        JOIN manufacturers m ON p.manufacturerId = m.id
+                    WHERE p.id = ?",
+            function($s) use ($productId) {
+                $s->bind_param("i", $productId);
+            }
+        );
+        $stat->bind_result($id, $name, $uname, $manname);
+        if ($stat->fetch()) {
+            $product = new \Application\Entities\Product($id, $name, $uname, $manname);
+        }
+        $stat->close();
+        $con->close();
+
+        return $product;
+    }
+
 
 
     public function getRatingsForProduct(int $productId): array {
@@ -123,6 +148,29 @@ class Repository
         return $ratings;
     }
 
+    public function getRatingsChronoForProduct(int $productId): array {
+        $ratings = [];
+
+        $con = $this->getConnection();
+        $stat = $this->executeStatement(
+            $con,
+            "SELECT r.id, r.date, r.comment, r.grade, u.uname, r.productId
+                    FROM ratings r JOIN users u ON r.userId = u.id
+                    WHERE r.productId = ?
+                    ORDER BY r.date DESC",
+            function($s) use ($productId) {
+                $s->bind_param("i", $productId);
+            }
+        );
+        $stat->bind_result($id, $date, $comment, $grade, $uname, $pId);
+        while ($stat->fetch()) {
+            $ratings[] = new \Application\Entities\Rating($id, $date, $comment !== null ? $comment : "", $grade, $uname, $pId);
+        }
+        $stat->close();
+        $con->close();
+
+        return $ratings;
+    }
 
 
     public function getUser(int $id): ?\Application\Entities\User {
