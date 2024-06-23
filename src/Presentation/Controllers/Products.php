@@ -15,6 +15,7 @@ class Products extends \Presentation\MVC\Controller {
         private \Application\ProductQuery           $productQuery,
         private \Application\AddProductCommand      $addProductCommand,
         private \Application\DeleteProductCommand   $deleteProductCommand,
+        private \Application\EditProductCommand     $editProductCommand
     ) { }
 
     public function GET_Index(): \Presentation\MVC\ActionResult {
@@ -118,6 +119,65 @@ class Products extends \Presentation\MVC\Controller {
             ]);
         } else {
             return $this->redirect('Products', 'Index'); // Redirect to overview page, so that the post request cant be repeated
+        }
+    }
+
+    public function GET_Edit(): \Presentation\MVC\ActionResult {
+        $productId = $this->tryGetParam(self::PARAM_PRODUCT_ID, $value) ? $value : null;
+        if ($productId === null) {
+            return $this->redirect('Products', 'Index');
+        }
+        $p = $this->productQuery->execute($productId);
+        if ($this->signedInUserQuery->execute()->userName !== $p->user) {
+            return $this->redirect('Products', 'Index');
+        }
+
+        return $this->view('productEdit', [
+            'user' => $this->signedInUserQuery->execute(),
+            'pid' => $productId,
+            'pname' => $p->name,
+            'mname' => $p->manufacturer,
+            'context' => $this->getRequestUri()
+        ]);
+    }
+
+    public function POST_Edit(): \Presentation\MVC\ActionResult {
+        $pname = $this->getParam(self::PARAM_PRODUCT_NAME);
+        $mname = $this->getParam(self::PARAM_MANUFACTURER_NAME);
+        $pid = $this->getParam(self::PARAM_PRODUCT_ID);
+
+        if ($pname === '' || $mname === '') {
+            return $this->view('productEdit', [
+                'user' => $this->signedInUserQuery->execute(),
+                'pname' => $this->tryGetParam(self::PARAM_PRODUCT_NAME, $value) ? $value : '',
+                'mname' => $this->tryGetParam(self::PARAM_MANUFACTURER_NAME, $value) ? $value : '',
+                'context' => $this->getRequestUri(),
+                'errors' => ["All input fields are required!"]
+            ]);
+        }
+
+        $result = $this->editProductCommand->execute($pid, $pname, $mname);
+
+        if ($result !== 0) {
+            if ($result & \Application\EditProductCommand::Error_NotAuthenticated) {
+                return $this->redirect('User', 'LogIn');
+            }
+
+            if ($result & \Application\EditProductCommand::Error_ProductDoesNotExist) {
+                // Redirection is okay, because to get this error the user needs to actively try to break the system
+                // So he doesn't deserve an error message
+                return $this->redirect('Products', 'Index');
+            }
+
+            return $this->view('productCreate', [
+                'user' => $this->signedInUserQuery->execute(),
+                'pname' => $this->tryGetParam(self::PARAM_PRODUCT_NAME, $value) ? $value : '',
+                'mname' => $this->tryGetParam(self::PARAM_MANUFACTURER_NAME, $value) ? $value : '',
+                'context' => $this->getRequestUri(),
+                'errors' => ["Failed saving your changes"]
+            ]);
+        } else {
+            return $this->redirect('Products', 'Index');
         }
     }
 }

@@ -4,7 +4,7 @@
         <h1 class="mb-0">Details for: <?php $htmlOut($data['product']->name) ?></h1>
         <div class="d-flex gap-1 mt-auto mb-auto">
             <?php if (isset($data['user']) && $data['product']->user === $data['user']->userName): ?>
-                <?php $beginForm('Products', 'Edit', ['pid' => $data['product']->id, 'ctx' => $data['context']], 'post', 'form-inline'); ?>
+                <?php $beginForm('Products', 'Edit', ['pid' => $data['product']->id, 'ctx' => $data['context']], 'get', 'form-inline'); ?>
                     <button class="btn btn-warning">Edit</button>
                 <?php $endForm(); ?>
 

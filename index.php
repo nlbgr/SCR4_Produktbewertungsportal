@@ -34,6 +34,7 @@ $sp->register(\Application\RatingsChronoQuery::class);
 $sp->register(\Application\ProductQuery::class);
 $sp->register(\Application\AddProductCommand::class);
 $sp->register(\Application\DeleteProductCommand::class);
+$sp->register(\Application\EditProductCommand::class);
 
 $sp->register(\Application\Services\AuthenticationService::class);
 

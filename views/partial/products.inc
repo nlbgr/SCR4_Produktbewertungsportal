@@ -24,7 +24,7 @@
                         <?php $endForm(); ?>
 
                         <?php if (isset($data['user']) && $product->user === $data['user']->userName): ?>
-                            <?php $beginForm('Products', 'Edit', ['pid' => $product->id, 'ctx' => $data['context']], 'post', 'form-inline'); ?>
+                            <?php $beginForm('Products', 'Edit', ['pid' => $product->id, 'ctx' => $data['context']], 'get', 'form-inline'); ?>
                                 <button class="btn btn-warning">Edit</button>
                             <?php $endForm(); ?>
 

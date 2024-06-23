@@ -172,6 +172,23 @@ class Repository
         return $this->getProductById($prodId);
     }
 
+    public function editProduct(int $pid, string $pname, int $userId, int $manId): ?\Application\Entities\Product {
+        $con = $this->getConnection();
+        $stat = $this->executeStatement($con,
+            'UPDATE products
+                    SET name = ?, manufacturerId = ?
+                    WHERE id = ? AND userId = ?',
+            function ($s) use ($pid, $pname, $userId, $manId) {
+                $s->bind_param('siii', $pname, $manId, $pid, $userId);
+            }
+        );
+        $stat->close();
+        $con->commit();
+        $con->close();
+
+        return $this->getProductById($pid);
+    }
+
     public function deleteProduct(string $productId, int $userId): bool {
         $con = $this->getConnection();
         $stat = $this->executeStatement($con,
