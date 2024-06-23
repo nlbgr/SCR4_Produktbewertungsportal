@@ -294,6 +294,23 @@ class Repository
         return $this->getRatingById($ratingId);
     }
 
+    public function editRating(int $ratingId, int $grade, string $comment, int $userId, int $prodId): ?\Application\Entities\Rating {
+        $con = $this->getConnection();
+        $stat = $this->executeStatement($con,
+            'UPDATE ratings
+                    SET date = SYSDATE(), comment = ?, grade = ? 
+                    WHERE id = ? AND userId = ? AND productId = ?',
+            function ($s) use ($comment, $grade, $ratingId, $userId, $prodId) {
+                $s->bind_param('siiii', $comment, $grade, $ratingId, $userId, $prodId);
+            }
+        );
+        $stat->close();
+        $con->commit();
+        $con->close();
+
+        return $this->getRatingById($ratingId);
+    }
+
     public function deleteRating(int $ratingId, int $userId): bool {
         $con = $this->getConnection();
         $stat = $this->executeStatement($con,

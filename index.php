@@ -38,6 +38,8 @@ $sp->register(\Application\DeleteProductCommand::class);
 $sp->register(\Application\EditProductCommand::class);
 $sp->register(\Application\AddRatingCommand::class);
 $sp->register(\Application\DeleteRatingCommand::class);
+$sp->register(\Application\RatingQuery::class);
+$sp->register(\Application\EditRatingCommand::class);
 
 $sp->register(\Application\Services\AuthenticationService::class);
 

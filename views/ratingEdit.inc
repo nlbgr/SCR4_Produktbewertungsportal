@@ -1,9 +1,9 @@
 <?php $render('partial/header', $data); ?>
 
-<h1>Rate Product: <?php $htmlOut($data['pname']); ?></h1>
+<h1>Edit rating on: <?php $htmlOut($data['pname']); ?></h1>
 
-<?php $beginForm('Rating', 'Create', method: 'post'); ?>
-    <input type="hidden" name="pid" value="<?php $htmlOut($data['pid']); ?>" />
+<?php $beginForm('Rating', 'Edit', method: 'post'); ?>
+    <input type="hidden" name="rid" value="<?php $htmlOut($data['rid']) ?>" />
     <div class="mb-3">
         <label for="grade" class="form-label">Grade</label>
         <select name="grade" id="grade" class="form-select">
@@ -19,7 +19,7 @@
         <label for="comment" class="form-label">Comment</label>
         <input type="text" class="form-control" id="comment" name="comment" value="<?php $htmlOut($data['comment']); ?>" />
     </div>
-    <button class="btn btn-primary">Create</button>
+    <button class="btn btn-primary">Save</button>
 <?php $endForm(); ?>
 
 <?php $render('partial/footer', $data); ?>

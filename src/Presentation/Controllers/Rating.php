@@ -14,6 +14,8 @@ class Rating extends \Presentation\MVC\Controller {
         private \Application\AddRatingCommand       $addRatingCommand,
         private \Application\DeleteRatingCommand    $deleteRatingCommand,
         private \Application\ProductsQuery          $productsQuery,
+        private \Application\RatingQuery            $ratingQuery,
+        private \Application\EditRatingCommand      $editRatingCommand
     ) {}
 
     public function GET_Create(): \Presentation\MVC\ActionResult {
@@ -23,6 +25,7 @@ class Rating extends \Presentation\MVC\Controller {
             'user' => $this->signedInUserQuery->execute(),
             'pid' => $pid,
             'pname' => $p->name,
+            'grade' => $this->tryGetParam(self::PARAM_GRADE, $value) ? $value : null,
             'comment' => $this->tryGetParam(self::PARAM_COMMENT, $value) ? $value : '',
             'context' => $this->getRequestUri()
         ]);
@@ -39,6 +42,7 @@ class Rating extends \Presentation\MVC\Controller {
                 'user' => $this->signedInUserQuery->execute(),
                 'pid' => $pid,
                 'pname' => $p->name,
+                'grade' => $this->tryGetParam(self::PARAM_GRADE, $value) ? $value : '',
                 'comment' => $this->tryGetParam(self::PARAM_COMMENT, $value) ? $value : '',
                 'context' => $this->getRequestUri(),
                 'errors' => ["Please select a grade"]
@@ -55,6 +59,7 @@ class Rating extends \Presentation\MVC\Controller {
                 'user' => $this->signedInUserQuery->execute(),
                 'pid' => $pid,
                 'pname' => $p->name,
+                'grade' => $this->tryGetParam(self::PARAM_GRADE, $value) ? $value : '',
                 'comment' => $this->tryGetParam(self::PARAM_COMMENT, $value) ? $value : '',
                 'context' => $this->getRequestUri(),
                 'errors' => ["Product creation failed"]
@@ -81,6 +86,66 @@ class Rating extends \Presentation\MVC\Controller {
             ]);
         } else {
             return $this->redirect('Products', 'Index'); // Redirect to overview page, so that the post request cant be repeated
+        }
+    }
+
+    public function GET_Edit(): \Presentation\MVC\ActionResult {
+        $rid = $this->getParam(self::PARAM_RATING_ID);
+        $rating = $this->ratingQuery->execute($rid);
+        $p = $this->productQuery->execute($rating->productId);
+
+        $prevGrade = $rating->grade !== null ? $rating->grade : null;
+        $prevComment = $rating->comment !== '' ? $rating->comment : '';
+
+        return $this->view('ratingEdit', [
+            'user' => $this->signedInUserQuery->execute(),
+            'rid' => $rid,
+            'pname' => $p->name,
+            'grade' => $this->tryGetParam(self::PARAM_GRADE, $value) ? $value : $prevGrade,
+            'comment' => $this->tryGetParam(self::PARAM_COMMENT, $value) ? $value : $prevComment,
+            'context' => $this->getRequestUri()
+        ]);
+    }
+
+    public function POST_Edit(): \Presentation\MVC\ActionResult {
+        $rid = $this->getParam(self::PARAM_RATING_ID);
+        $rating = $this->ratingQuery->execute($rid);
+        $p = $this->productQuery->execute($rating->productId);
+
+        $grade = $this->tryGetParam(self::PARAM_GRADE, $value) ? $value : '';
+        $comment = $this->tryGetParam(self::PARAM_COMMENT, $value) ? $value : '';
+
+        if (!isset($grade) || $grade <= 0 || $grade > 5) {
+            return $this->view('ratingEdit', [
+                'user' => $this->signedInUserQuery->execute(),
+                'pid' => $p->id,
+                'rid' => $rid,
+                'pname' => $p->name,
+                'grade' => $this->tryGetParam(self::PARAM_GRADE, $value) ? $value : '',
+                'comment' => $this->tryGetParam(self::PARAM_COMMENT, $value) ? $value : '',
+                'context' => $this->getRequestUri(),
+                'errors' => ["Please select a grade"]
+            ]);
+        }
+
+        $result = $this->editRatingCommand->execute($rid, $grade, $comment, $p->id);
+        if ($result !== 0) {
+            if ($result & \Application\AddProductCommand::Error_NotAuthenticated) {
+                return $this->redirect('User', 'LogIn');
+            }
+
+            return $this->view('ratingEdit', [
+                'user' => $this->signedInUserQuery->execute(),
+                'pid' => $p->id,
+                'rid' => $rid,
+                'pname' => $p->name,
+                'grade' => $this->tryGetParam(self::PARAM_GRADE, $value) ? $value : '',
+                'comment' => $this->tryGetParam(self::PARAM_COMMENT, $value) ? $value : '',
+                'context' => $this->getRequestUri(),
+                'errors' => ["Failed saving your changes"]
+            ]);
+        } else {
+            return $this->redirect('Products', 'Index');
         }
     }
 }
