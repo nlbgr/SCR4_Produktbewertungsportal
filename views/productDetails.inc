@@ -24,8 +24,9 @@
     <div class="d-flex justify-content-between">
         <h2>Ratings</h2>
         <div class="mb-2">
-            <?php $link('CreateRating', 'Products', 'CreateRating',
-                cssClass: (!isset($data['user']) ? 'btn btn-secondary disabled' : 'btn btn-primary')) ?>
+            <?php $beginForm('Rating', 'Create', ['pid' => $data['product']->id, 'ctx' => $data['context']], 'get', 'form-inline'); ?>
+                <button class="<?php echo (!isset($data['user']) ? 'btn btn-secondary disabled' : 'btn btn-primary') ?>">Add Rating</button>
+            <?php $endForm(); ?>
         </div>
     </div>
     <div class="d-flex flex-column gap-2">

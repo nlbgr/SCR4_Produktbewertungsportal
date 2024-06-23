@@ -253,6 +253,47 @@ class Repository
         return $ratings;
     }
 
+    public function getRatingById(int $ratingId): ?\Application\Entities\Rating {
+        $rating = null;
+
+        $con = $this->getConnection();
+        $stat = $this->executeStatement(
+            $con,
+            "SELECT r.id, r.date, r.comment, r.grade, u.uname, r.productId
+                    FROM ratings r
+                        JOIN users u ON r.userId = u.id
+                    WHERE r.id = ?",
+            function($s) use ($ratingId) {
+                $s->bind_param("i", $ratingId);
+            }
+        );
+        $stat->bind_result($id, $date, $comment, $grade, $uname, $pid);
+        if ($stat->fetch()) {
+            $rating = new \Application\Entities\Rating($id, $date, $comment, $grade, $uname, $pid);
+        }
+        $stat->close();
+        $con->close();
+
+        return $rating;
+    }
+
+    public function createRating(int $grade, string $comment, int $userId, int $prodId): ?\Application\Entities\Rating {
+        $con = $this->getConnection();
+        $stat = $this->executeStatement($con,
+            'INSERT INTO ratings (date, comment, grade, userId, productId)
+                    VALUES (SYSDATE(), ?, ?, ?, ?)',
+            function ($s) use ($comment, $grade, $userId, $prodId) {
+                $s->bind_param('siii', $comment, $grade, $userId, $prodId);
+            }
+        );
+        $ratingId = $stat->insert_id;
+        $stat->close();
+        $con->commit();
+        $con->close();
+
+        return $this->getRatingById($ratingId);
+    }
+
 
 
     public function getUser(int $id): ?\Application\Entities\User {

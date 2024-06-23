@@ -18,6 +18,7 @@ $sp->register(\Presentation\MVC\MVC::class, function(){
 $sp->register(\Presentation\Controllers\Home::class);
 $sp->register(\Presentation\Controllers\Products::class);
 $sp->register(\Presentation\Controllers\User::class);
+$sp->register(\Presentation\Controllers\Rating::class);
 
 
 // APPLICATION
@@ -35,6 +36,7 @@ $sp->register(\Application\ProductQuery::class);
 $sp->register(\Application\AddProductCommand::class);
 $sp->register(\Application\DeleteProductCommand::class);
 $sp->register(\Application\EditProductCommand::class);
+$sp->register(\Application\AddRatingCommand::class);
 
 $sp->register(\Application\Services\AuthenticationService::class);
 
