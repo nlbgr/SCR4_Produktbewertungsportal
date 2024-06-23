@@ -16,7 +16,7 @@
                 <td><?php $htmlOut($product->user); ?></td>
                 <td><?php $htmlOut($product->manufacturer); ?></td>
                 <td><?php $htmlOut($product->numOfRatings); ?></td>
-                <td><?php $htmlOut($product->meanRating); ?></td>
+                <td><?php $htmlOut(round($product->meanRating, 2)); ?></td>
                 <td>
                     <div class="d-flex gap-1">
                         <?php $beginForm('Products', 'Details', ['pid' => $product->id, 'ctx' => $data['context']], 'get', 'form-inline'); ?>
@@ -24,6 +24,10 @@
                         <?php $endForm(); ?>
 
                         <?php if (isset($data['user']) && $product->user === $data['user']->userName): ?>
+                            <?php $beginForm('Products', 'Edit', ['pid' => $product->id, 'ctx' => $data['context']], 'post', 'form-inline'); ?>
+                                <button class="btn btn-warning">Edit</button>
+                            <?php $endForm(); ?>
+
                             <?php $beginForm('Products', 'Delete', ['pid' => $product->id, 'ctx' => $data['context']], 'post', 'form-inline'); ?>
                                 <button class="btn btn-danger">Delete</button>
                             <?php $endForm(); ?>

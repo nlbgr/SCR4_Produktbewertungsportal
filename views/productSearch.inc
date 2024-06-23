@@ -15,10 +15,11 @@
         <?php $endForm(); ?>
     </div>
 
-    <?php if ($data['books'] != null): ?>
-        <?php if (sizeof($data['books']) > 0) {
-            $render('partial/books', array(
-                'books' => $data['books'],
+    <?php if ($data['products'] != null): ?>
+        <?php if (sizeof($data['products']) > 0) {
+            $render('partial/products', array(
+                'user' => $data['user'],
+                'products' => $data['products'],
                 'context' => $data['context']
             ));
         } else { ?>

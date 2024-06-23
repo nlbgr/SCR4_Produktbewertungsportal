@@ -6,11 +6,11 @@ class Products extends \Presentation\MVC\Controller {
     const PARAM_FILTER = 'f';
 
     public function __construct(
-        private \Application\ProductsQuery          $productsQuery,
-        private \Application\BookSearchQuery        $bookSearchQuery,
-        private \Application\SignedInUserQuery      $signedInUserQuery,
-        private \Application\RatingsChronoQuery     $ratingsChronoQuery,
-        private \Application\ProductQuery           $productQuery
+        private \Application\ProductsQuery      $productsQuery,
+        private \Application\ProductSearchQuery $productSearchQuery,
+        private \Application\SignedInUserQuery  $signedInUserQuery,
+        private \Application\RatingsChronoQuery $ratingsChronoQuery,
+        private \Application\ProductQuery       $productQuery
     ) { }
 
     public function GET_Index(): \Presentation\MVC\ActionResult {
@@ -22,12 +22,11 @@ class Products extends \Presentation\MVC\Controller {
     }
 
     public function GET_Search(): \Presentation\MVC\ActionResult {
-        echo $this->tryGetParam(self::PARAM_FILTER, $value) ? $value : 'nothing';
-        echo ' | ', $this->tryGetParam(self::PARAM_FILTER, $value);
+        $value = $this->tryGetParam(self::PARAM_FILTER, $v) ? $v : '';
         return $this->view('productSearch', [
             'user' => $this->signedInUserQuery->execute(),
-            'filter' => $this->tryGetParam(self::PARAM_FILTER, $value) ? $value : '',
-            'books' => $this->tryGetParam(self::PARAM_FILTER, $value) ? $this->bookSearchQuery->execute($value) : null,
+            'filter' => $value,
+            'products' => $this->productSearchQuery->execute($value),
             'context' => $this->getRequestUri()
         ]);
     }

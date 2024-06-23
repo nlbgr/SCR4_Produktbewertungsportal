@@ -23,7 +23,7 @@ $sp->register(\Presentation\Controllers\User::class);
 // APPLICATION
 // commands and querries
 $sp->register(\Application\ProductsQuery::class);
-$sp->register(\Application\BookSearchQuery::class);
+$sp->register(\Application\ProductSearchQuery::class);
 $sp->register(\Application\SignInCommand::class);
 $sp->register(\Application\SignedInUserQuery::class);
 $sp->register(\Application\SignOutCommand::class);

@@ -77,25 +77,29 @@ class Repository
         return $products;
     }
 
-    public function getBooksForFilter(string $filter): array {
+    public function getProductsForFilter(string $filter): array {
         $filter = "%$filter%";
-        $books = [];
+        $products = [];
 
         $con = $this->getConnection();
         $stat = $this->executeStatement(
             $con,
-            "SELECT id, title, author, price FROM books WHERE title LIKE ?",
+            "SELECT p.id, p.name, u.uname, m.name
+                    FROM products p
+                        JOIN users u ON p.userId = u.id
+                        JOIN manufacturers m ON p.manufacturerId = m.id
+                    WHERE p.name LIKE ? OR m.name LIKE ?",
             function($s) use ($filter) {
-                $s->bind_param('s', $filter);
+                $s->bind_param('ss', $filter, $filter);
             });
-        $stat->bind_result($id, $title, $author, $price);
+        $stat->bind_result($id, $name, $uname, $mname);
         while($stat->fetch()) {
-            $books[] = new \Application\Entities\Book($id, $title, $author, $price);
+            $products[] = new \Application\Entities\Product($id, $name, $uname, $mname);
         }
         $stat->close();
         $con->close();
 
-        return $books;
+        return $products;
     }
 
     public function getProductById(int $productId): ?\Application\Entities\Product {
