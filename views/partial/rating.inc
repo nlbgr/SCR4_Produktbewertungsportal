@@ -25,7 +25,7 @@
     <?php if (isset($data['user']) && $data['rating']->user === $data['user']->userName): ?>
         <div class="d-flex gap-1">
             <?php $beginForm('Products', 'EditRating', ['rid' => $data['rating']->id, 'ctx' => $data['context']], 'post', 'form-inline'); ?>
-                <button class="btn btn-primary">Edit</button>
+                <button class="btn btn-warning">Edit</button>
             <?php $endForm(); ?>
 
             <?php $beginForm('Products', 'DeleteRating', ['rid' => $data['rating']->id, 'ctx' => $data['context']], 'post', 'form-inline'); ?>

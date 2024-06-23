@@ -6,7 +6,8 @@ class Repository
     implements
     \Application\Interfaces\ProductRepository,
     \Application\Interfaces\UserRepository,
-    \Application\Interfaces\RatingsRepository
+    \Application\Interfaces\RatingsRepository,
+    \Application\Interfaces\ManufacturerRepository
 {
     private $server;
     private $userName;
@@ -53,6 +54,8 @@ class Repository
         }
         return $statement;
     }
+
+
 
     public function getProducts(): array {
         $products = [];
@@ -127,6 +130,63 @@ class Repository
         return $product;
     }
 
+    public function getProductByNameAndManufacturer(string $pname, string $manId): ?\Application\Entities\Product {
+        $product = null;
+
+        $con = $this->getConnection();
+        $stat = $this->executeStatement(
+            $con,
+            "SELECT p.id, p.name, u.uname, m.name 
+                    FROM products p 
+                        JOIN users u ON p.userId = u.id
+                        JOIN manufacturers m ON p.manufacturerId = m.id
+                    WHERE p.name = ? AND p.manufacturerId = ?",
+            function($s) use ($pname, $manId) {
+                $s->bind_param("si", $pname, $manId);
+            }
+        );
+        $stat->bind_result($id, $name, $uname, $manname);
+        if ($stat->fetch()) {
+            $product = new \Application\Entities\Product($id, $name, $uname, $manname);
+        }
+        $stat->close();
+        $con->close();
+
+        return $product;
+    }
+
+    public function createProduct(string $pname, int $userId, int $manId): ?\Application\Entities\Product {
+        $con = $this->getConnection();
+        $stat = $this->executeStatement($con,
+            'INSERT INTO products (name, userId, manufacturerId)
+                    VALUES (?, ?, ?)',
+            function ($s) use ($pname, $userId, $manId) {
+                $s->bind_param('sii', $pname, $userId, $manId);
+            }
+        );
+        $prodId = $stat->insert_id;
+        $stat->close();
+        $con->commit();
+        $con->close();
+
+        return $this->getProductById($prodId);
+    }
+
+    public function deleteProduct(string $productId, int $userId): bool {
+        $con = $this->getConnection();
+        $stat = $this->executeStatement($con,
+            'DELETE FROM products WHERE id = ? AND userId = ?',
+            function($s) use ($productId, $userId) {
+                $s->bind_param('ii', $productId, $userId);
+            }
+        );
+        $stat->close();
+        $con->commit();
+        $con->close();
+
+        return $this->getProductById($productId) === null;
+    }
+
 
 
     public function getRatingsForProduct(int $productId): array {
@@ -177,6 +237,7 @@ class Repository
     }
 
 
+
     public function getUser(int $id): ?\Application\Entities\User {
         $user = null;
         $con = $this->getConnection();
@@ -214,7 +275,6 @@ class Repository
     }
 
     public function createUser(string $userName, string $password): ?\Application\Entities\User {
-        $user = null;
         $con = $this->getConnection();
         $stat = $this->executeStatement($con,
             'INSERT INTO `users` (`uname`, `pwdhash`)
@@ -229,5 +289,60 @@ class Repository
         $con->close();
 
         return $this->getUser($userId);
+    }
+
+
+
+    public function getManufacturerByName(string $mname): ?\Application\Entities\Manufacturer {
+        $manufacturer = null;
+        $con = $this->getConnection();
+        $stat = $this->executeStatement($con,
+            'SELECT id, name FROM manufacturers WHERE name = ?',
+            function($s) use ($mname) {
+                $s->bind_param('s', $mname);
+            }
+        );
+        $stat->bind_result($id, $name);
+        if ($stat->fetch()) {
+            $manufacturer = new \Application\Entities\Manufacturer($id, $name);
+        }
+        $stat->close();
+        $con->close();
+        return $manufacturer;
+    }
+
+    public function getManufacturerById(int $id): ?\Application\Entities\Manufacturer {
+        $manufacturer = null;
+        $con = $this->getConnection();
+        $stat = $this->executeStatement($con,
+            'SELECT id, name FROM manufacturers WHERE id = ?',
+            function($s) use ($id) {
+                $s->bind_param('i', $id);
+            }
+        );
+        $stat->bind_result($id, $name);
+        if ($stat->fetch()) {
+            $manufacturer = new \Application\Entities\Manufacturer($id, $name);
+        }
+        $stat->close();
+        $con->close();
+        return $manufacturer;
+    }
+
+    public function createNewManufacturer(string $mname): ?\Application\Entities\Manufacturer {
+        $con = $this->getConnection();
+        $stat = $this->executeStatement($con,
+            'INSERT INTO `manufacturers` (`name`)
+                    VALUES (?)',
+            function ($s) use ($mname) {
+                $s->bind_param('s', $mname);
+            }
+        );
+        $manId = $stat->insert_id;
+        $stat->close();
+        $con->commit();
+        $con->close();
+
+        return $this->getManufacturerById($manId);
     }
 }

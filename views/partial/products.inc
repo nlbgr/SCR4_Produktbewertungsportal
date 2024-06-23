@@ -18,7 +18,7 @@
                 <td><?php $htmlOut($product->numOfRatings); ?></td>
                 <td><?php $htmlOut(round($product->meanRating, 2)); ?></td>
                 <td>
-                    <div class="d-flex gap-1">
+                    <div class="d-flex gap-1 mt-auto mb-auto">
                         <?php $beginForm('Products', 'Details', ['pid' => $product->id, 'ctx' => $data['context']], 'get', 'form-inline'); ?>
                             <button class="btn btn-primary">Details</button>
                         <?php $endForm(); ?>

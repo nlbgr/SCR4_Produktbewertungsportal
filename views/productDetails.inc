@@ -1,6 +1,19 @@
 <?php $render('partial/header', $data); ?>
 
-    <h1 class="mb-5">Details for: <?php $htmlOut($data['product']->name) ?></h1>
+    <div class="d-flex justify-content-between mb-3">
+        <h1 class="mb-0">Details for: <?php $htmlOut($data['product']->name) ?></h1>
+        <div class="d-flex gap-1 mt-auto mb-auto">
+            <?php if (isset($data['user']) && $data['product']->user === $data['user']->userName): ?>
+                <?php $beginForm('Products', 'Edit', ['pid' => $data['product']->id, 'ctx' => $data['context']], 'post', 'form-inline'); ?>
+                    <button class="btn btn-warning">Edit</button>
+                <?php $endForm(); ?>
+
+                <?php $beginForm('Products', 'Delete', ['pid' => $data['product']->id, 'ctx' => $data['context']], 'post', 'form-inline'); ?>
+                    <button class="btn btn-danger">Delete</button>
+                <?php $endForm(); ?>
+            <?php endif; ?>
+        </div>
+    </div>
     <div class="d-flex flex-column gap-2 mb-5">
         <p class="mb-0"><strong>Manufacturer: </strong> <?php $htmlOut($data['product']->manufacturer) ?> </p>
         <p class="mb-0"><strong>Created by: </strong> <?php $htmlOut($data['product']->user) ?> </p>

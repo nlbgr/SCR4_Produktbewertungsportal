@@ -19,7 +19,9 @@ class ProductQuery {
             foreach ($ratings as $r) {
                 $meanR += $r->grade;
             };
-            $meanR = $meanR / count($ratings);
+            if (count($ratings) !== 0) {
+                $meanR = $meanR / count($ratings);
+            }
 
             $product = new ProductData($p->getId(), $p->getName(), $p->getUserName(), $p->getManufacturerName(), count($ratings), $meanR);
         }

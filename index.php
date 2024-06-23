@@ -32,6 +32,8 @@ $sp->register(\Application\SignUpCommand::class);
 $sp->register(\Application\RatingsQuery::class);
 $sp->register(\Application\RatingsChronoQuery::class);
 $sp->register(\Application\ProductQuery::class);
+$sp->register(\Application\AddProductCommand::class);
+$sp->register(\Application\DeleteProductCommand::class);
 
 $sp->register(\Application\Services\AuthenticationService::class);
 
@@ -48,6 +50,7 @@ $sp->register(\Infrastructure\Repository::class, function() {
 $sp->register(\Application\Interfaces\ProductRepository::class, \Infrastructure\Repository::class);
 $sp->register(\Application\Interfaces\UserRepository::class, \Infrastructure\Repository::class);
 $sp->register(\Application\Interfaces\RatingsRepository::class, \Infrastructure\Repository::class);
+$sp->register(\Application\Interfaces\ManufacturerRepository::class, \Infrastructure\Repository::class);
 
 
 $sp->resolve(\Presentation\MVC\MVC::class)->handleRequest($sp); 
